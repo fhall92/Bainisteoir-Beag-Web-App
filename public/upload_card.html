@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1"
+        name="viewport">
+  <title>Upload Card</title>
+  <style media="screen">
+
+    /* Style the links inside the navigation bar */
+  .topnav a {
+  float: left;
+  color: purple;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+
+  .topnav {
+      align-items: baseline;
+      justify-content: baseline;
+  background-color: rgb(110, 212, 255);
+  overflow: hidden;
+  }
+
+  /* Change the color of links on hover */
+  .topnav a:hover {
+  background-color: rgb(192, 236, 255);
+  color: purple;
+  }
+
+  /* Add a color to the active/current link */
+  .topnav a.active {
+  background-color: rgb(245, 255, 55);
+  color: purple;
+  }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    h2 {
+      text-align: center;
+      color: purple;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 26px;
+    }
+
+    label,
+    input {
+      display: block;
+      color: purple;
+      width: 250px;
+    }
+
+    input {
+      font-size: 18px;
+      padding: 15px;
+    }
+
+    label {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background-color: purple;
+      border: none;
+      color: white;
+      padding: 25px;
+      text-align: center;
+      display: inline-block;
+      font-size: 16px;
+      width: 10%;
+      margin-left: 45%;
+      margin-right: 45%
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="topnav">
+    <a class="active"
+         href="upload_card.html">Add Card</a> <a href="register_user.html">Add New User</a> <a href="sign_out.html">Sign Out</a>
+  </div>
+  <h2>Upload New Card</h2><label>Enter Card Title <input id="cardTitle"
+         placeholder="Card Title"
+         type="text"></label> <label>Upload Front Image <input id="fileButtonFront"
+         type="file"
+         value="upload"></label> <label>Upload Back Image: <input id="fileButtonBack"
+         type="file"
+         value="upload"></label> <button onclick="addCard()">Save</button> 
+  <script src="/__/firebase/7.14.0/firebase-app.js"></script> 
+  <script src="/__/firebase/7.14.0/firebase-auth.js"></script> 
+  <script src="/__/firebase/7.14.0/firebase-firestore.js"></script> 
+  <script src="/__/firebase/7.14.0/firebase-storage.js"></script> 
+  <script src="/__/firebase/init.js"></script> 
+  <script>
+
+    // Declare elements
+    var fileButtonFront = document.getElementById("fileButtonFront");
+    var fileButtonBack = document.getElementById("fileButtonBack");
+    var saveButton = document.getElementById("saveButton");
+    var URL = "gs://bainisteoir-beag.appspot.com/cards/";
+    var downloadURL = "none";
+    var front = "none";
+    var back = "none";
+    var cardTitle = "none";
+
+    //Listen for file selection
+    fileButtonFront.addEventListener("change", function (e) {
+      //Get file
+      var file = e.target.files[0];
+
+      //Create a storage ref
+      const storageRef = firebase.storage().ref("cards/" + file.name);
+      front = file.name;
+      downloadURL = URL + file.name;
+
+      //upload file
+      var task = storageRef.put(file);
+      alert("Front Image Uploaded");
+    });
+
+    fileButtonBack.addEventListener("change", function (e) {
+      //Get file
+      var file = e.target.files[0];
+      //Create a storage ref
+      const storageRef = firebase.storage().ref("cards/" + file.name);
+      back = file.name;
+      downloadURL = URL + file.name;
+
+      //upload file
+      var task = storageRef.put(file);
+
+      alert("Back Image Uploaded");
+    });
+
+    function addCard() {
+      var db = firebase.firestore();
+      cardTitle = document.getElementById("cardTitle").value;
+
+      console.log("Save Button Clicked");
+
+      if (front != "none" && back != "none" && cardTitle != "none") {
+        db.collection("newCards")
+          .doc(cardTitle)
+          .set({
+            front: front,
+            back: back,
+            title: cardTitle,
+          })
+          .then(function () {
+            console.log("Document successfully written to Cards.");
+            alert("Card Successfully Added.")
+            location.reload();
+          })
+          .catch(function (error) {
+            console.error("Error writing document to Cards: ", error);
+            alert("Error Adding to Firestore");
+          });
+      }
+
+      else {
+        alert("You must fill in all forms");
+      }
+    }
+
+    function redirect(url) {
+      window.location.href = url;
+    }
+
+    function wait(ms) {
+      var start = new Date().getTime();
+      var end = start;
+      while (end < start + ms) {
+        end = new Date().getTime();
+      }
+    }
+
+     firebase.auth().onAuthStateChanged(function (user) {
+         if (user) {
+             console.log("Logged In");
+         } else {
+            redirect("login.html");
+         }
+     });
+
+  </script>
+</body>
+</html>

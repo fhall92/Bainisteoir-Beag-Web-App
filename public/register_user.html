@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1"
+        name="viewport">
+  <title>Register New Admin</title>
+  <style media="screen">
+
+    
+    /* Style the links inside the navigation bar */
+  .topnav a {
+  float: left;
+  color: purple;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+
+  .topnav {
+      align-items: baseline;
+      justify-content: baseline;
+  background-color: rgb(110, 212, 255);
+  overflow: hidden;
+  }
+
+  /* Change the color of links on hover */
+  .topnav a:hover {
+  background-color: rgb(192, 236, 255);
+  color: purple;
+  }
+
+  /* Add a color to the active/current link */
+  .topnav a.active {
+  background-color: rgb(245, 255, 55);
+  color: purple;
+  }
+
+
+    body {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    
+    h2 {
+        text-align: center;
+        color: purple;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 26px;
+    }
+    
+    label,
+    input {
+        display: block;
+        color: purple;
+        width: 250px;
+    }
+    
+    input {
+        font-size: 18px;
+        padding: 15px;
+    }
+    
+    label {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    
+    button {
+        background-color: purple;
+        border: none;
+        color: white;
+        padding: 25px;
+        text-align: center;
+        display: inline-block;
+        font-size: 16px;
+        width: 50%;
+        margin-left: 25%;
+        margin-right: 25%       
+    }
+  </style>
+</head>
+<body>
+  <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  <script src="/__/firebase/7.14.0/firebase-app.js"></script> <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+   
+  <script src="/__/firebase/7.14.0/firebase-analytics.js"></script> <!-- Add Firebase products that you want to use -->
+   
+  <script src="/__/firebase/7.14.0/firebase-auth.js"></script> 
+  <script src="/__/firebase/7.14.0/firebase-firestore.js"></script> 
+  <script src="/__/firebase/init.js"></script>
+  <div class="topnav">
+    <a href="upload_card.html">Add Card</a> <a class="active"
+         href="register_user.html">Add New User</a> <a href="sign_out.html">Sign Out</a>
+  </div>
+  <div class="login-form">
+    <h2>Register New Admin</h2><label>Email Address <input id="email"
+           placeholder="Email Address"
+           title="email"
+           type="email"></label> <label>Password <input id="password"
+           placeholder="Password"
+           title="Password"
+           type="password"></label> <label>Confirm Password <input id="confirmPassword"
+           placeholder="Confirm Password"
+           title="confirmPassword"
+           type="password"></label><button class="btn"
+         onclick="register()"
+         type="button">Register</button>
+  </div>
+  <script>
+    var email = document.getElementById("email");
+    var password = document.getElementById("password");
+    var confirmPassword = document.getElementById("confirmPassword");
+    const auth  = firebase.auth();    
+
+    function register(){
+      var emailValue = email.value;
+      var passwordValue = password.value; 
+      var confirmPasswordValue = confirmPassword.value;
+
+      if(passwordValue == confirmPasswordValue){
+      auth.createUserWithEmailAndPassword(emailValue, passwordValue).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      alert(errorMessage);
+      });
+      wait(1000);
+      alert("User created: " + emailValue);
+      location.reload();  
+    }
+    else{
+      alert("Password must match Confirm Password");
+    }
+  }
+
+  function redirect(url) {
+      window.location.href = url;
+    }
+
+    function wait(ms) {
+      var start = new Date().getTime();
+      var end = start;
+      while (end < start + ms) {
+        end = new Date().getTime();
+      }
+    }
+
+    //Check Auth status and redirect if not logged in
+     firebase.auth().onAuthStateChanged(function (user) {
+         if (user) {
+             console.log("Logged In");
+         } else {
+            redirect("login.html");
+         }
+     });
+
+    
+  </script>
+</body>
+</html>
